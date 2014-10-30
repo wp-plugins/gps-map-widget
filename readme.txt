@@ -15,6 +15,8 @@ This plugin implements a widget with a static google map which shows the GPS coo
 This plugin implements a widget with a static google map which shows the GPS coordinates if those are available in the featured image.
 It does nothing less, but also nothing more.. 
 
+For a demo see http://www.funsite.eu/gps_map_widget/
+
 == Installation ==
 
 1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
@@ -29,7 +31,8 @@ As an first attempt to write a widget and because I couldn't find one that did w
 
 == Screenshots ==
 
-No screenshots are available. See http://www.funsite.eu/2014/10/dutch-prairies/ "GPS location" for an example.
+1. Widget as presented to the user (using Alizee theme in this case)
+2. The widget settings
 
 == Changelog ==
 
