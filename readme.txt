@@ -4,7 +4,7 @@ Donate link:
 Tags: featured image,gps,google maps,static map,widget
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,9 @@ Guess you can use them for generating your own image from bing maps or alike. Pu
 No screenshots are available. See http://www.funsite.eu/2014/10/dutch-prairies/ "GPS location" for an example.
 
 == Changelog ==
+
+= 1.2 =
+Nothing really just trying to clean up some stupid svn mixups..
 
 = 1.1 =
 * found coordinates are stored in the database. For now this is done whenever the plugin is shown and only for the post on screen.
