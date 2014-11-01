@@ -1,20 +1,20 @@
 <?php
 /**
  * @package GPS_MAP_Widget
- * @version 1.2.1
+ * @version 1.2.2
  */
 /*
 Plugin Name: GPS_MAP_Widget
 Plugin URI: 
 Description: Shows a static google map with the GPS location of the featured image.
 Author: Gerhard Hoogterp
-Version: 1.2.1
+Version: 1.2.2
 Author URI: http://www.funsite.eu/
 */
 
 // Add Shortcode
 
-if (!exists_function('exif_gps')){
+if (!function_exists('exif_gps')){
 	function exif_gps($coordinate, $hemisphere) {
 		for ($i = 0; $i < 3; $i++) {
 		$part = explode('/', $coordinate[$i]);
@@ -32,7 +32,7 @@ if (!exists_function('exif_gps')){
 	}
 }
 
-if (!exists_function('getLocationFromDBorExif')) {
+if (!function_exists('getLocationFromDBorExif')) {
 	function getLocationFromDBorExif($post_thumbnail_id) {
 		// Check if the location is already stored in the database
 		// if not, try to get it from the EXIF information and store it.
