@@ -1,58 +1,60 @@
 <?php
 /**
  * @package GPS_MAP_Widget
- * @version 1.2
+ * @version 1.2.1
  */
 /*
 Plugin Name: GPS_MAP_Widget
 Plugin URI: 
 Description: Shows a static google map with the GPS location of the featured image.
 Author: Gerhard Hoogterp
-Version: 1.2
+Version: 1.2.1
 Author URI: http://www.funsite.eu/
 */
 
 // Add Shortcode
 
-function gps($coordinate, $hemisphere) {
-	for ($i = 0; $i < 3; $i++) {
-	$part = explode('/', $coordinate[$i]);
-	if (count($part) == 1) {
-		$coordinate[$i] = $part[0];
-	} else if (count($part) == 2) {
-		$coordinate[$i] = floatval($part[0])/floatval($part[1]);
-	} else {
-		$coordinate[$i] = 0;
-	}
-	}
-	list($degrees, $minutes, $seconds) = $coordinate;
-	$sign = ($hemisphere == 'W' || $hemisphere == 'S') ? -1 : 1;
-	return $sign * ($degrees + $minutes/60 + $seconds/3600);
-}
-
-
-function getLocationFromDBorExif($post_thumbnail_id) {
-	// Check if the location is already stored in the database
-	// if not, try to get it from the EXIF information and store it.
-	$location = get_post_meta($post_thumbnail_id,'EXIF_location',true);
-	if (empty($location)) {
-
-		$thumbnail=get_attached_file( $post_thumbnail_id, true );
-		$exif = exif_read_data($thumbnail);
-		if (is_array($exif["GPSLatitude"]) && is_array($exif["GPSLongitude"])) {
-			$location['latitude'] = gps($exif["GPSLatitude"], $exif['GPSLatitudeRef']);
-			$location['longitude'] = gps($exif["GPSLongitude"], $exif['GPSLongitudeRef']);
-			$location['hasLocation'] = true;
-
-			} else {
-			$location['hasLocation'] = false;
+if (!exists_function('exif_gps')){
+	function exif_gps($coordinate, $hemisphere) {
+		for ($i = 0; $i < 3; $i++) {
+		$part = explode('/', $coordinate[$i]);
+		if (count($part) == 1) {
+			$coordinate[$i] = $part[0];
+		} else if (count($part) == 2) {
+			$coordinate[$i] = floatval($part[0])/floatval($part[1]);
+		} else {
+			$coordinate[$i] = 0;
 		}
-
-		add_post_meta($post_thumbnail_id,'EXIF_location',$location) || update_post_meta($post_thumbnail_id,'EXIF_location',$location);
+		}
+		list($degrees, $minutes, $seconds) = $coordinate;
+		$sign = ($hemisphere == 'W' || $hemisphere == 'S') ? -1 : 1;
+		return $sign * ($degrees + $minutes/60 + $seconds/3600);
 	}
-return $location;
 }
 
+if (!exists_function('getLocationFromDBorExif')) {
+	function getLocationFromDBorExif($post_thumbnail_id) {
+		// Check if the location is already stored in the database
+		// if not, try to get it from the EXIF information and store it.
+		$location = get_post_meta($post_thumbnail_id,'EXIF_location',true);
+		if (empty($location)) {
+
+			$thumbnail=get_attached_file( $post_thumbnail_id, true );
+			$exif = exif_read_data($thumbnail);
+			if (is_array($exif["GPSLatitude"]) && is_array($exif["GPSLongitude"])) {
+				$location['latitude'] = exif_gps($exif["GPSLatitude"], $exif['GPSLatitudeRef']);
+				$location['longitude'] = exif_gps($exif["GPSLongitude"], $exif['GPSLongitudeRef']);
+				$location['hasLocation'] = true;
+
+				} else {
+				$location['hasLocation'] = false;
+			}
+
+			add_post_meta($post_thumbnail_id,'EXIF_location',$location) || update_post_meta($post_thumbnail_id,'EXIF_location',$location);
+		}
+	return $location;
+	}
+}
 
 function custom_EXIF_location( $atts) {
 	$res = '';
