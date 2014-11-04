@@ -48,7 +48,8 @@ Guess you can use them for generating your own image from bing maps or alike. Pu
 
 == Screenshots ==
 
-No screenshots are available. See http://www.funsite.eu/2014/10/dutch-prairies/ "GPS location" for an example.
+1. Widget as presented to the user (using Alizee theme in this case)
+2. The widget settings
 
 == Changelog ==
 = 1.2.2 =
