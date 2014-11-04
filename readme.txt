@@ -16,7 +16,8 @@ This plugin implements a widget with a static google map which shows the GPS coo
 
 Besides the widget it also adds two shortcodes:
 
-EXIF_locationmap 
+= EXIF_locationmap: =
+
 *	width: width of the mapimage in px. default 300px
 *	height: height of the mapimage in px. default 200px;
 *	zoom: googlemaps zoomlevel. Default 11
@@ -25,8 +26,9 @@ EXIF_locationmap
 Example: 
 	[EXIF_locationmap width=750 height=300 zoom=11 errors=false]
 		
-EXIF_location
-*	part:  'latitude', 'longitude' or 'both'
+= EXIF_location: =
+
+* part:  'latitude', 'longitude' or 'both'
 	
 example:
 	[EXIF_location part=both]
