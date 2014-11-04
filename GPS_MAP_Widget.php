@@ -1,14 +1,14 @@
 <?php
 /**
  * @package GPS_MAP_Widget
- * @version 1.2.2
+ * @version 1.2.3
  */
 /*
 Plugin Name: GPS_MAP_Widget
 Plugin URI: 
 Description: Shows a static google map with the GPS location of the featured image.
 Author: Gerhard Hoogterp
-Version: 1.2.2
+Version: 1.2.3
 Author URI: http://www.funsite.eu/
 */
 
