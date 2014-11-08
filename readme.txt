@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: jondor
-Donate link: 
+Donate link: http://www.funsite.eu/downloadable-wallpapers/
 Tags: featured image,gps,google maps,static map,widget
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,10 +29,15 @@ Example:
 = EXIF_location: =
 
 * part:  'latitude', 'longitude' or 'both'
-	
+* form:  'dec' or 'dms' (decimal or Degree minute seconds. Decimal is default);
+
+
 example:
 	[EXIF_location part=both]
 	will return  52.22935055,6.8737411
+	
+	[EXIF_location part=both form=dms]
+	will return  52°21'13"N , 6°26'7"N
 
 == Installation ==
 
@@ -54,6 +59,9 @@ Guess you can use them for generating your own image from bing maps or alike. Pu
 2. The widget settings
 
 == Changelog ==
+= 1.2.4 =
+Added form attribute
+
 = 1.2.3 =
 Fixed readme
 

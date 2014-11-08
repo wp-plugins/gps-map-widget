@@ -1,14 +1,14 @@
 <?php
 /**
  * @package GPS_MAP_Widget
- * @version 1.2.3
+ * @version 1.2.4
  */
 /*
 Plugin Name: GPS_MAP_Widget
-Plugin URI: 
+Plugin URI: http://www.funsite.eu/plugins/gps_map_widget/
 Description: Shows a static google map with the GPS location of the featured image.
 Author: Gerhard Hoogterp
-Version: 1.2.3
+Version: 1.2.4
 Author URI: http://www.funsite.eu/
 */
 
@@ -56,6 +56,19 @@ if (!function_exists('getLocationFromDBorExif')) {
 	}
 }
 
+if (!function_exists('DEC2DMS')) {
+	function DEC2DMS($coord) {
+	$isnorth = $coord>=0;
+	$coord = abs($coord);
+	$deg = floor($coord);
+	$coord = ($coord-$deg)*60;
+	$min = floor($coord);
+	$sec = floor(($coord-$min)*60);
+	return sprintf("%d&deg;%d'%d\"%s", $deg, $min, $sec, $isnorth ? 'N' : 'S');
+	}   
+}
+
+
 function custom_EXIF_location( $atts) {
 	$res = '';
 	
@@ -63,6 +76,7 @@ function custom_EXIF_location( $atts) {
 	extract( shortcode_atts(
 		array(
 			'part' => 'both',
+			'form' => 'dec',  // or DMS
 		), $atts )
 	);
 
@@ -73,12 +87,16 @@ function custom_EXIF_location( $atts) {
 	if (!$location['hasLocation']) {
 		$location['latitude']='?';
 		$location['longitude']='?';
+	} elseif (strtoupper($form)=='DMS') {
+		$location['latitude']=DEC2DMS($location['latitude']);
+		$location['longitude']=DEC2DMS($location['longitude']);
 	}
+	
 
 	switch ($part) {
 		case 'latitude': $res = $location['latitude']; break;
 		case 'longitude': $res = $location['longitude']; break;
-		default: $res = $location['latitude'].','.$location['longitude'];
+		default: $res = $location['latitude'].' , '.$location['longitude'];
 	}
 
 	return $res;	
