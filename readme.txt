@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: jondor
-Donate link: 
+Donate link: http://www.funsite.eu/downloadable-wallpapers/
 Tags: featured image,gps,google maps,static map,widget
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: trunk
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,24 +16,29 @@ This plugin implements a widget with a static google map which shows the GPS coo
 
 Besides the widget it also adds two shortcodes:
 
-EXIF_locationmap 
-	width: width of the mapimage in px. default 300px
-	height: height of the mapimage in px. default 200px;
-	zoom: googlemaps zoomlevel. Default 11
-	Errors: Show error messages when no exif is available or when there's no featured image. Default is false for the shortcode
+= EXIF_locationmap: =
 
-	Example: 
-		[EXIF_locationmap width=750 height=300 zoom=11 errors=false]
+*	width: width of the mapimage in px. default 300px
+*	height: height of the mapimage in px. default 200px;
+*	zoom: googlemaps zoomlevel. Default 11
+*	Errors: Show error messages when no exif is available or when there's no featured image. Default is false for the shortcode
+
+Example: 
+	[EXIF_locationmap width=750 height=300 zoom=11 errors=false]
 		
-EXIF_location
-	part:  'latitude', 'longitude' or 'both'
-	
-	example:
-		[EXIF_location part=both]
-		
+= EXIF_location: =
+
+* part:  'latitude', 'longitude' or 'both'
+* form:  'dec' or 'dms' (decimal or Degree minute seconds. Decimal is default);
+
+
+example:
+	[EXIF_location part=both]
 	will return  52.22935055,6.8737411
-
 	
+	[EXIF_location part=both form=dms]
+	will return  52°21'13"N , 6°26'7"N
+
 == Installation ==
 
 1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
@@ -50,9 +55,24 @@ Guess you can use them for generating your own image from bing maps or alike. Pu
 
 == Screenshots ==
 
-No screenshots are available. See http://www.funsite.eu/2014/10/dutch-prairies/ "GPS location" for an example.
+1. Widget as presented to the user (using Alizee theme in this case)
+2. The widget settings
 
 == Changelog ==
+= 1.2.4 =
+Added form attribute
+
+= 1.2.3 =
+Fixed readme
+
+= 1.2.2 =
+Minor details
+	
+= 1.2.1 =
+* learned the order in which plugins are loaded is important. So I've added checkes for the existance of functions
+
+= 1.2 =
+Nothing really just trying to clean up some stupid svn mixups..
 
 = 1.1 =
 * found coordinates are stored in the database. For now this is done whenever the plugin is shown and only for the post on screen.
@@ -67,4 +87,3 @@ No screenshots are available. See http://www.funsite.eu/2014/10/dutch-prairies/ 
 == Upgrade Notice ==
 
 After the first read the file on disk is left alone. This should speed things up a little and opens up posibilities for other, future, features.
-
