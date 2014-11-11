@@ -4,7 +4,7 @@
  * @version 1.2.4
  */
 /*
-Plugin Name: GPS_MAP_Widget
+Plugin Name: GPS MAP Widget
 Plugin URI: http://www.funsite.eu/plugins/gps_map_widget/
 Description: Shows a static google map with the GPS location of the featured image.
 Author: Gerhard Hoogterp
