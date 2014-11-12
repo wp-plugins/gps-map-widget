@@ -238,12 +238,21 @@ class GPS_MAP_Widget extends WP_Widget {
 	}
 }
 
+/* -------------------------------------------------------------------------------------- */
+function gps_map_widget_PluginLinks($links, $file) {
+		$base = plugin_basename(__FILE__);
+		if ($file == $base) {
+			$links[] = '<a href="https://wordpress.org/support/view/plugin-reviews/gps-map-widget">' . __('A review would be appriciated.','wp_widget_plugin') . '</a>';
+		}
+		return $links;
+	}
+
+add_filter('plugin_row_meta', 'gps_map_widget_PluginLinks',10,2);
+
+
 function add_header_code () {
   wp_enqueue_script('GPS_MAP_Widget_js_handler', plugins_url('/js/scripts.js', __FILE__ ), array( 'jquery' ));
 }		
-
-
-
 
 add_shortcode( 'EXIF_locationmap', 'custom_EXIF_locationmap' );
 add_shortcode( 'EXIF_location', 'custom_EXIF_location' );
