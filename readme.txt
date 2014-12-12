@@ -4,7 +4,7 @@ Donate link: http://www.funsite.eu/downloadable-wallpapers/
 Tags: featured image,gps,google maps,static map,widget
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 1.2.4
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,12 +53,20 @@ As an first attempt to write a widget and because I couldn't find one that did w
 = Why the shortcodes =
 Guess you can use them for generating your own image from bing maps or alike. Putting a big map in the content has it's charm too.. 
 
+= I would like to edit the coordinates =
+Well, you probably can in your image processing software. Digikam can do it, so can darktable. But starting with the map on the editscreen I'm 
+slowely working towards this feature. 
+
 == Screenshots ==
 
 1. Widget as presented to the user (using Alizee theme in this case)
 2. The widget settings
 
 == Changelog ==
+
+= 1.3 =
+Added the map to the media edit page. 
+
 = 1.2.4 =
 Added form attribute
 

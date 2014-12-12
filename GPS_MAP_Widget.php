@@ -1,14 +1,14 @@
 <?php
 /**
  * @package GPS_MAP_Widget
- * @version 1.2.4
+ * @version 1.3
  */
 /*
-Plugin Name: GPS_MAP_Widget
+Plugin Name: GPS MAP Widget
 Plugin URI: http://www.funsite.eu/plugins/gps_map_widget/
 Description: Shows a static google map with the GPS location of the featured image.
 Author: Gerhard Hoogterp
-Version: 1.2.4
+Version: 1.3
 Author URI: http://www.funsite.eu/
 */
 
@@ -116,11 +116,12 @@ function custom_EXIF_locationmap( $atts ) {
 
 	// Code
 	$mapsize = $width.'x'.$height;	
-	
+
 	$post_thumbnail_id = get_post_thumbnail_id( $GLOBALS['post']->ID );
 	if ($post_thumbnail_id) {
 
 		$location = getLocationFromDBorExif($post_thumbnail_id);
+
 		if ($location['hasLocation']) {
 			
 			$res  = '<a href="https://www.google.nl/maps/?q='.$location['latitude'].','.$location['longitude'].'&amp;zoom='.$zoom.'" rel="external" title="'.__('click to open a new tab or window with google maps','GPS_MAP_Widget_plugin').'">';
@@ -238,12 +239,44 @@ class GPS_MAP_Widget extends WP_Widget {
 	}
 }
 
+/* -------------------------------------------------------------------------------------- */
+function create_gps_map_box() {
+	add_meta_box( 'gps_map_box', 'GPS location', 'gps_map_box', 'attachment', 'side', 'default' );
+}
+
+function gps_map_box( $object, $box ) { 
+	$location = getLocationFromDBorExif($GLOBALS['post']->ID);
+	
+	$width = '300';
+	$height = '200';
+	$zoom = '11';
+	$mapsize = $width.'x'.$height;	
+
+	if ($location['hasLocation']) {
+		$res  = '<a style="display: block;" href="https://www.google.nl/maps/?q='.$location['latitude'].','.$location['longitude'].'&amp;zoom='.$zoom.'" rel="external" title="'.__('click to open a new tab or window with google maps','GPS_MAP_Widget_plugin').'">';
+		$res .=	'<img src="https://maps.googleapis.com/maps/api/staticmap?zoom='.$zoom.'&size='.$mapsize.'&markers=size:mid|'.$location['latitude'].','.$location['longitude'].'" style="width:100%">';
+		$res .= '</a>';
+	} else {
+		$res = '<p>'.__('There is no GPS information available','GPS_MAP_Widget_plugin').'</p>';
+	}
+	echo $res;
+}	
+
+/* -------------------------------------------------------------------------------------- */
+function gps_map_widget_PluginLinks($links, $file) {
+		$base = plugin_basename(__FILE__);
+		if ($file == $base) {
+			$links[] = '<a href="https://wordpress.org/support/view/plugin-reviews/gps-map-widget">' . __('A review would be appriciated.','wp_widget_plugin') . '</a>';
+		}
+		return $links;
+	}
+
+add_filter('plugin_row_meta', 'gps_map_widget_PluginLinks',10,2);
+
+
 function add_header_code () {
   wp_enqueue_script('GPS_MAP_Widget_js_handler', plugins_url('/js/scripts.js', __FILE__ ), array( 'jquery' ));
 }		
-
-
-
 
 add_shortcode( 'EXIF_locationmap', 'custom_EXIF_locationmap' );
 add_shortcode( 'EXIF_location', 'custom_EXIF_location' );
@@ -251,4 +284,8 @@ add_shortcode( 'EXIF_location', 'custom_EXIF_location' );
 // register widget
 add_action('widgets_init', create_function('', 'return register_widget("GPS_MAP_Widget");'));
 add_action('wp_head', 'add_header_code',false,false,true);
+add_action('admin_init', 'add_header_code',false,false,true);
+
+// map on the attachment edit page
+add_action( 'admin_menu', 'create_gps_map_box' );
 ?>
