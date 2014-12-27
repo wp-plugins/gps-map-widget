@@ -1,16 +1,18 @@
 <?php
 /**
  * @package GPS_MAP_Widget
- * @version 1.3
+ * @version 1.4
  */
 /*
 Plugin Name: GPS MAP Widget
 Plugin URI: http://www.funsite.eu/plugins/gps_map_widget/
 Description: Shows a static google map with the GPS location of the featured image.
 Author: Gerhard Hoogterp
-Version: 1.3
+Version: 1.4
 Author URI: http://www.funsite.eu/
 */
+
+define('FS_TEXTDOMAIN','gpsmapwidget');
 
 // Add Shortcode
 
@@ -124,17 +126,17 @@ function custom_EXIF_locationmap( $atts ) {
 
 		if ($location['hasLocation']) {
 			
-			$res  = '<a href="https://www.google.nl/maps/?q='.$location['latitude'].','.$location['longitude'].'&amp;zoom='.$zoom.'" rel="external" title="'.__('click to open a new tab or window with google maps','GPS_MAP_Widget_plugin').'">';
+			$res  = '<a href="https://www.google.nl/maps/?q='.$location['latitude'].','.$location['longitude'].'&amp;zoom='.$zoom.'" rel="external" title="'.__('click to open a new tab or window with google maps',FS_TEXTDOMAIN).'">';
 			$res .=	'<img src="https://maps.googleapis.com/maps/api/staticmap?zoom='.$zoom.'&size='.$mapsize.'&markers=size:mid|'.$location['latitude'].','.$location['longitude'].'" style="width:100%">';
 			$res .= '</a>';
 		} else {
 				if ($errors) {
-					$res = '<p>'.__('There is no GPS information available','GPS_MAP_Widget_plugin').'</p>';
+					$res = '<p>'.__('There is no GPS information available',FS_TEXTDOMAIN).'</p>';
 				}
 		}
 	} else {
 		if ($errors) {
-			$res ='<p>'.__('There is no featured image available','GPS_MAP_Widget_plugin').'</p>';
+			$res ='<p>'.__('There is no featured image available',FS_TEXTDOMAIN).'</p>';
 		}
 	}
 	
@@ -147,8 +149,8 @@ class GPS_MAP_Widget extends WP_Widget {
 	// constructor
 	function GPS_MAP_Widget() {
 		parent::WP_Widget(false, 
-							$name = __('GPS_MAP_Widget', 'GPS_MAP_Widget_plugin'),
-							array('description' => __('Shows a static google map with the GPS location of the featured image','GPS_MAP_Widget_plugin'))
+							$name = __('GPS MAP Widget', FS_TEXTDOMAIN),
+							array('description' => __('Shows a static google map with the GPS location of the featured image',FS_TEXTDOMAIN))
 								);
 	}
 
@@ -164,7 +166,7 @@ class GPS_MAP_Widget extends WP_Widget {
 		$height = esc_textarea($instance['height']);
 		$zoom = esc_textarea($instance['zoom']);
 	    } else {
-		$title = 'GPS location';
+		$title = __('GPS location',FS_TEXTDOMAIN);
 		$width = 300;
 		$height = 200;
 		$zoom = 11;
@@ -172,21 +174,21 @@ class GPS_MAP_Widget extends WP_Widget {
 	    ?>
 
 	    <p>
-	    <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Widget Title', 'wp_widget_plugin'); ?></label>
+	    <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Widget Title', FS_TEXTDOMAIN); ?></label>
 	    <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" />
 	    </p>
 	    <p>
-	    <label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('gmap width', 'wp_widget_plugin'); ?></label>
+	    <label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('gmap width', FS_TEXTDOMAIN); ?></label>
 	    <input class="widefat" id="<?php echo $this->get_field_id('width'); ?>" name="<?php echo $this->get_field_name('width'); ?>" type="text" value="<?php echo $width; ?>" />
 	    </p>
 	    
    	    <p>
-	    <label for="<?php echo $this->get_field_id('height'); ?>"><?php _e('gmap height', 'wp_widget_plugin'); ?></label>
+	    <label for="<?php echo $this->get_field_id('height'); ?>"><?php _e('gmap height', FS_TEXTDOMAIN); ?></label>
 	    <input class="widefat" id="<?php echo $this->get_field_id('height'); ?>" name="<?php echo $this->get_field_name('height'); ?>" type="text" value="<?php echo $height; ?>" />
 	    </p>
 	    
 	    <p>
-	    <label for="<?php echo $this->get_field_id('zoom'); ?>"><?php _e('gmap zoom', 'wp_widget_plugin'); ?></label>
+	    <label for="<?php echo $this->get_field_id('zoom'); ?>"><?php _e('gmap zoom', FS_TEXTDOMAIN); ?></label>
 	    <input class="widefat" id="<?php echo $this->get_field_id('zoom'); ?>" name="<?php echo $this->get_field_name('zoom'); ?>" type="text" value="<?php echo $zoom; ?>" />
 	    </p>
 	    
@@ -253,20 +255,31 @@ function gps_map_box( $object, $box ) {
 	$mapsize = $width.'x'.$height;	
 
 	if ($location['hasLocation']) {
-		$res  = '<a style="display: block;" href="https://www.google.nl/maps/?q='.$location['latitude'].','.$location['longitude'].'&amp;zoom='.$zoom.'" rel="external" title="'.__('click to open a new tab or window with google maps','GPS_MAP_Widget_plugin').'">';
+		$res  = '<a style="display: block;" href="https://www.google.nl/maps/?q='.$location['latitude'].','.$location['longitude'].'&amp;zoom='.$zoom.'" rel="external" title="'.__('click to open a new tab or window with google maps',FS_TEXTDOMAIN).'">';
 		$res .=	'<img src="https://maps.googleapis.com/maps/api/staticmap?zoom='.$zoom.'&size='.$mapsize.'&markers=size:mid|'.$location['latitude'].','.$location['longitude'].'" style="width:100%">';
 		$res .= '</a>';
 	} else {
-		$res = '<p>'.__('There is no GPS information available','GPS_MAP_Widget_plugin').'</p>';
+		$res = '<p>'.__('There is no GPS information available',FS_TEXTDOMAIN).'</p>';
 	}
 	echo $res;
 }	
 
 /* -------------------------------------------------------------------------------------- */
+function myGpsMapWidgetTextDomain() {
+	load_plugin_textdomain(
+		FS_TEXTDOMAIN,
+		false,
+		dirname(plugin_basename(__FILE__)).'/languages/'
+	);
+}
+
+add_action('init', 'myGpsMapWidgetTextDomain');
+
+
 function gps_map_widget_PluginLinks($links, $file) {
 		$base = plugin_basename(__FILE__);
 		if ($file == $base) {
-			$links[] = '<a href="https://wordpress.org/support/view/plugin-reviews/gps-map-widget">' . __('A review would be appriciated.','wp_widget_plugin') . '</a>';
+			$links[] = '<a href="https://wordpress.org/support/view/plugin-reviews/gps-map-widget">' . __('A review would be appriciated.',FS_TEXTDOMAIN) . '</a>';
 		}
 		return $links;
 	}

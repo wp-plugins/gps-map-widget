@@ -4,7 +4,7 @@ Donate link: http://www.funsite.eu/downloadable-wallpapers/
 Tags: featured image,gps,google maps,static map,widget
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stable tag: 1.3
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,6 +63,10 @@ slowely working towards this feature.
 2. The widget settings
 
 == Changelog ==
+
+= 1.4 =
+Added translation support and added an extra dutch translation. If you translate the pluing the resulting .po file would be appriciated. 
+I used the "CodeStyling Localization" for my translation and it worked like a dream.
 
 = 1.3 =
 Added the map to the media edit page. 
