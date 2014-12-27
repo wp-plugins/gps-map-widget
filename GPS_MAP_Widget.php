@@ -1,36 +1,73 @@
 <?php
 /**
  * @package GPS_MAP_Widget
- * @version 1.1
+ * @version 1.4
  */
 /*
-Plugin Name: GPS_MAP_Widget
-Plugin URI: 
+Plugin Name: GPS MAP Widget
+Plugin URI: http://www.funsite.eu/plugins/gps_map_widget/
 Description: Shows a static google map with the GPS location of the featured image.
 Author: Gerhard Hoogterp
-Version: 1.1
+Version: 1.4
 Author URI: http://www.funsite.eu/
 */
 
+define('FS_TEXTDOMAIN','gpsmapwidget');
+
 // Add Shortcode
 
-function getLocationFromDBorExif($post_thumbnail_id) {
-	// Check if the location is already stored in the database
-	// if not, try to get it from the EXIF information and store it.
-	$location = get_post_meta($post_thumbnail_id,'EXIF_location',true);
-	if (empty($location)) {
-		$thumbnail=get_attached_file( $post_thumbnail_id, true );
-		$exif = exif_read_data($thumbnail);
-		if (is_array($exif["GPSLatitude"]) && is_array($exif["GPSLongitude"])) {
-			$location['latitude'] = $this->gps($exif["GPSLatitude"], $exif['GPSLatitudeRef']);
-			$location['longitude'] = $this->gps($exif["GPSLongitude"], $exif['GPSLongitudeRef']);
-			$location['hasLocation'] = true;
+if (!function_exists('exif_gps')){
+	function exif_gps($coordinate, $hemisphere) {
+		for ($i = 0; $i < 3; $i++) {
+		$part = explode('/', $coordinate[$i]);
+		if (count($part) == 1) {
+			$coordinate[$i] = $part[0];
+		} else if (count($part) == 2) {
+			$coordinate[$i] = floatval($part[0])/floatval($part[1]);
 		} else {
-			$location['hasLocation'] = false;
+			$coordinate[$i] = 0;
 		}
-		add_post_meta($post_thumbnail_id,'EXIF_location',$location) || update_post_meta($post_thumbnail_id,'EXIF_location',$location);
+		}
+		list($degrees, $minutes, $seconds) = $coordinate;
+		$sign = ($hemisphere == 'W' || $hemisphere == 'S') ? -1 : 1;
+		return $sign * ($degrees + $minutes/60 + $seconds/3600);
 	}
-return $location;
+}
+
+if (!function_exists('getLocationFromDBorExif')) {
+	function getLocationFromDBorExif($post_thumbnail_id) {
+		// Check if the location is already stored in the database
+		// if not, try to get it from the EXIF information and store it.
+		$location = get_post_meta($post_thumbnail_id,'EXIF_location',true);
+		if (empty($location)) {
+
+			$thumbnail=get_attached_file( $post_thumbnail_id, true );
+			$exif = exif_read_data($thumbnail);
+			if (is_array($exif["GPSLatitude"]) && is_array($exif["GPSLongitude"])) {
+				$location['latitude'] = exif_gps($exif["GPSLatitude"], $exif['GPSLatitudeRef']);
+				$location['longitude'] = exif_gps($exif["GPSLongitude"], $exif['GPSLongitudeRef']);
+				$location['hasLocation'] = true;
+
+				} else {
+				$location['hasLocation'] = false;
+			}
+
+			add_post_meta($post_thumbnail_id,'EXIF_location',$location) || update_post_meta($post_thumbnail_id,'EXIF_location',$location);
+		}
+	return $location;
+	}
+}
+
+if (!function_exists('DEC2DMS')) {
+	function DEC2DMS($coord) {
+	$isnorth = $coord>=0;
+	$coord = abs($coord);
+	$deg = floor($coord);
+	$coord = ($coord-$deg)*60;
+	$min = floor($coord);
+	$sec = floor(($coord-$min)*60);
+	return sprintf("%d&deg;%d'%d\"%s", $deg, $min, $sec, $isnorth ? 'N' : 'S');
+	}   
 }
 
 
@@ -41,6 +78,7 @@ function custom_EXIF_location( $atts) {
 	extract( shortcode_atts(
 		array(
 			'part' => 'both',
+			'form' => 'dec',  // or DMS
 		), $atts )
 	);
 
@@ -51,12 +89,16 @@ function custom_EXIF_location( $atts) {
 	if (!$location['hasLocation']) {
 		$location['latitude']='?';
 		$location['longitude']='?';
+	} elseif (strtoupper($form)=='DMS') {
+		$location['latitude']=DEC2DMS($location['latitude']);
+		$location['longitude']=DEC2DMS($location['longitude']);
 	}
+	
 
 	switch ($part) {
 		case 'latitude': $res = $location['latitude']; break;
 		case 'longitude': $res = $location['longitude']; break;
-		default: $res = $location['latitude'].','.$location['longitude'];
+		default: $res = $location['latitude'].' , '.$location['longitude'];
 	}
 
 	return $res;	
@@ -64,7 +106,6 @@ function custom_EXIF_location( $atts) {
 
 function custom_EXIF_locationmap( $atts ) {
 	$res = '';
-	
 	// Attributes
 	extract( shortcode_atts(
 		array(
@@ -77,24 +118,25 @@ function custom_EXIF_locationmap( $atts ) {
 
 	// Code
 	$mapsize = $width.'x'.$height;	
-	
+
 	$post_thumbnail_id = get_post_thumbnail_id( $GLOBALS['post']->ID );
 	if ($post_thumbnail_id) {
 
 		$location = getLocationFromDBorExif($post_thumbnail_id);
+
 		if ($location['hasLocation']) {
 			
-			$res  = '<a href="https://www.google.nl/maps/?q='.$location['latitude'].','.$location['longitude'].'&amp;zoom='.$zoom.'" rel="external" title="'.__('click to open a new tab or window with google maps','GPS_MAP_Widget_plugin').'">';
+			$res  = '<a href="https://www.google.nl/maps/?q='.$location['latitude'].','.$location['longitude'].'&amp;zoom='.$zoom.'" rel="external" title="'.__('click to open a new tab or window with google maps',FS_TEXTDOMAIN).'">';
 			$res .=	'<img src="https://maps.googleapis.com/maps/api/staticmap?zoom='.$zoom.'&size='.$mapsize.'&markers=size:mid|'.$location['latitude'].','.$location['longitude'].'" style="width:100%">';
 			$res .= '</a>';
 		} else {
 				if ($errors) {
-					$res = '<p>'.__('There is no GPS information available','GPS_MAP_Widget_plugin').'</p>';
+					$res = '<p>'.__('There is no GPS information available',FS_TEXTDOMAIN).'</p>';
 				}
 		}
 	} else {
 		if ($errors) {
-			$res ='<p>'.__('There is no featured image available','GPS_MAP_Widget_plugin').'</p>';
+			$res ='<p>'.__('There is no featured image available',FS_TEXTDOMAIN).'</p>';
 		}
 	}
 	
@@ -107,27 +149,13 @@ class GPS_MAP_Widget extends WP_Widget {
 	// constructor
 	function GPS_MAP_Widget() {
 		parent::WP_Widget(false, 
-							$name = __('GPS_MAP_Widget', 'GPS_MAP_Widget_plugin'),
-							array('description' => __('Shows a static google map with the GPS location of the featured image','GPS_MAP_Widget_plugin'))
+							$name = __('GPS MAP Widget', FS_TEXTDOMAIN),
+							array('description' => __('Shows a static google map with the GPS location of the featured image',FS_TEXTDOMAIN))
 								);
 	}
 
 	
-	function gps($coordinate, $hemisphere) {
-	  for ($i = 0; $i < 3; $i++) {
-	    $part = explode('/', $coordinate[$i]);
-	    if (count($part) == 1) {
-	      $coordinate[$i] = $part[0];
-	    } else if (count($part) == 2) {
-	      $coordinate[$i] = floatval($part[0])/floatval($part[1]);
-	    } else {
-	      $coordinate[$i] = 0;
-	    }
-	  }
-	  list($degrees, $minutes, $seconds) = $coordinate;
-	  $sign = ($hemisphere == 'W' || $hemisphere == 'S') ? -1 : 1;
-	  return $sign * ($degrees + $minutes/60 + $seconds/3600);
-	}
+
 
 	// widget form creation
 	function form($instance) {
@@ -138,7 +166,7 @@ class GPS_MAP_Widget extends WP_Widget {
 		$height = esc_textarea($instance['height']);
 		$zoom = esc_textarea($instance['zoom']);
 	    } else {
-		$title = 'GPS location';
+		$title = __('GPS location',FS_TEXTDOMAIN);
 		$width = 300;
 		$height = 200;
 		$zoom = 11;
@@ -146,21 +174,21 @@ class GPS_MAP_Widget extends WP_Widget {
 	    ?>
 
 	    <p>
-	    <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Widget Title', 'wp_widget_plugin'); ?></label>
+	    <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Widget Title', FS_TEXTDOMAIN); ?></label>
 	    <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" />
 	    </p>
 	    <p>
-	    <label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('gmap width', 'wp_widget_plugin'); ?></label>
+	    <label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('gmap width', FS_TEXTDOMAIN); ?></label>
 	    <input class="widefat" id="<?php echo $this->get_field_id('width'); ?>" name="<?php echo $this->get_field_name('width'); ?>" type="text" value="<?php echo $width; ?>" />
 	    </p>
 	    
    	    <p>
-	    <label for="<?php echo $this->get_field_id('height'); ?>"><?php _e('gmap height', 'wp_widget_plugin'); ?></label>
+	    <label for="<?php echo $this->get_field_id('height'); ?>"><?php _e('gmap height', FS_TEXTDOMAIN); ?></label>
 	    <input class="widefat" id="<?php echo $this->get_field_id('height'); ?>" name="<?php echo $this->get_field_name('height'); ?>" type="text" value="<?php echo $height; ?>" />
 	    </p>
 	    
 	    <p>
-	    <label for="<?php echo $this->get_field_id('zoom'); ?>"><?php _e('gmap zoom', 'wp_widget_plugin'); ?></label>
+	    <label for="<?php echo $this->get_field_id('zoom'); ?>"><?php _e('gmap zoom', FS_TEXTDOMAIN); ?></label>
 	    <input class="widefat" id="<?php echo $this->get_field_id('zoom'); ?>" name="<?php echo $this->get_field_name('zoom'); ?>" type="text" value="<?php echo $zoom; ?>" />
 	    </p>
 	    
@@ -213,12 +241,55 @@ class GPS_MAP_Widget extends WP_Widget {
 	}
 }
 
+/* -------------------------------------------------------------------------------------- */
+function create_gps_map_box() {
+	add_meta_box( 'gps_map_box', 'GPS location', 'gps_map_box', 'attachment', 'side', 'default' );
+}
+
+function gps_map_box( $object, $box ) { 
+	$location = getLocationFromDBorExif($GLOBALS['post']->ID);
+	
+	$width = '300';
+	$height = '200';
+	$zoom = '11';
+	$mapsize = $width.'x'.$height;	
+
+	if ($location['hasLocation']) {
+		$res  = '<a style="display: block;" href="https://www.google.nl/maps/?q='.$location['latitude'].','.$location['longitude'].'&amp;zoom='.$zoom.'" rel="external" title="'.__('click to open a new tab or window with google maps',FS_TEXTDOMAIN).'">';
+		$res .=	'<img src="https://maps.googleapis.com/maps/api/staticmap?zoom='.$zoom.'&size='.$mapsize.'&markers=size:mid|'.$location['latitude'].','.$location['longitude'].'" style="width:100%">';
+		$res .= '</a>';
+	} else {
+		$res = '<p>'.__('There is no GPS information available',FS_TEXTDOMAIN).'</p>';
+	}
+	echo $res;
+}	
+
+/* -------------------------------------------------------------------------------------- */
+function myGpsMapWidgetTextDomain() {
+	load_plugin_textdomain(
+		FS_TEXTDOMAIN,
+		false,
+		dirname(plugin_basename(__FILE__)).'/languages/'
+	);
+}
+
+add_action('init', 'myGpsMapWidgetTextDomain');
+
+
+function gps_map_widget_PluginLinks($links, $file) {
+		$base = plugin_basename(__FILE__);
+		if ($file == $base) {
+			$links[] = '<a href="https://wordpress.org/support/view/plugin-reviews/gps-map-widget">' . __('A review would be appriciated.',FS_TEXTDOMAIN) . '</a>';
+		}
+		return $links;
+	}
+
+add_filter('plugin_row_meta', 'gps_map_widget_PluginLinks',10,2);
+
+
 function add_header_code () {
   wp_enqueue_script('GPS_MAP_Widget_js_handler', plugins_url('/js/scripts.js', __FILE__ ), array( 'jquery' ));
 }		
-
-
-
 
 add_shortcode( 'EXIF_locationmap', 'custom_EXIF_locationmap' );
 add_shortcode( 'EXIF_location', 'custom_EXIF_location' );
@@ -226,4 +297,8 @@ add_shortcode( 'EXIF_location', 'custom_EXIF_location' );
 // register widget
 add_action('widgets_init', create_function('', 'return register_widget("GPS_MAP_Widget");'));
 add_action('wp_head', 'add_header_code',false,false,true);
+add_action('admin_init', 'add_header_code',false,false,true);
+
+// map on the attachment edit page
+add_action( 'admin_menu', 'create_gps_map_box' );
 ?>
