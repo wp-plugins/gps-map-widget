@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: GPS MAP Widget v1.3\n"
+"Project-Id-Version: GPS MAP Widget v1.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2014-12-27 15:43:28+0000\n"
+"PO-Revision-Date: 2014-12-29 21:31:49+0000\n"
 "Last-Translator: admin <admin@funsite.eu>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,60 +20,61 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Textdomain-Support: yes"
 
-#: GPS_MAP_Widget.php:129
-#: GPS_MAP_Widget.php:258
+#: GPS_MAP_Widget.php:250
+#: GPS_MAP_Widget.php:280
 #@ gpsmapwidget
 msgid "click to open a new tab or window with google maps"
 msgstr "Klik om een nieuwe tab of window te openen met google maps."
 
-#: GPS_MAP_Widget.php:134
-#: GPS_MAP_Widget.php:262
+#: GPS_MAP_Widget.php:255
+#: GPS_MAP_Widget.php:284
 #@ gpsmapwidget
 msgid "There is no GPS information available"
 msgstr "Er is geen GPS informatie bschikbaar"
 
-#: GPS_MAP_Widget.php:139
+#: GPS_MAP_Widget.php:260
 #@ gpsmapwidget
 msgid "There is no featured image available"
-msgstr "Er is geen \\\"featured\\\" image beschikbaar"
+msgstr "Er is geen uitgelichte foto beschikbaar"
 
-#: GPS_MAP_Widget.php:153
+#: GPS_MAP_Widget.php:24
 #@ gpsmapwidget
 msgid "Shows a static google map with the GPS location of the featured image"
-msgstr "Toont een statische google map met de GPS locatie van de \\\"featured\\\" foto."
+msgstr "Toont een statische google map met de GPS locatie van de uitgelichte foto."
 
-#: GPS_MAP_Widget.php:169
+#: GPS_MAP_Widget.php:40
+#: GPS_MAP_Widget.php:268
 #@ gpsmapwidget
 msgid "GPS location"
 msgstr "GPS locatie"
 
-#: GPS_MAP_Widget.php:177
+#: GPS_MAP_Widget.php:48
 #@ gpsmapwidget
 msgid "Widget Title"
 msgstr "Widget titel"
 
-#: GPS_MAP_Widget.php:181
+#: GPS_MAP_Widget.php:52
 #@ gpsmapwidget
 msgid "gmap width"
 msgstr "gmap breedte (pixels)"
 
-#: GPS_MAP_Widget.php:186
+#: GPS_MAP_Widget.php:57
 #@ gpsmapwidget
 msgid "gmap height"
 msgstr "gmap hoogte (pixels)"
 
-#: GPS_MAP_Widget.php:191
+#: GPS_MAP_Widget.php:62
 #@ gpsmapwidget
 msgid "gmap zoom"
 msgstr "gmap zoom"
 
-#: GPS_MAP_Widget.php:282
-#@ gpsmapwidget
-msgid "A review would be appriciated."
-msgstr "Een review wordt op prijsgesteld."
-
-#: GPS_MAP_Widget.php:152
+#: GPS_MAP_Widget.php:23
 #@ gpsmapwidget
 msgid "GPS MAP Widget"
 msgstr "GPS Map widget"
+
+#: GPS_MAP_Widget.php:301
+#@ gpsmapwidget
+msgid "Please rate me."
+msgstr "'Rate' me alstublieft."
 
