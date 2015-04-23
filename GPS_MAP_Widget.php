@@ -11,7 +11,9 @@ Author: Gerhard Hoogterp
 Version: 1.5
 Author URI: http://www.funsite.eu/
 */
-
+if (!class_exists('basic_plugin_class')) {
+	require(plugin_dir_path(__FILE__).'basics/basic_plugin.class');
+}
 
 class GPS_MAP_Widget extends WP_Widget {
 
@@ -91,7 +93,7 @@ class GPS_MAP_Widget extends WP_Widget {
 		echo $before_widget;
 	  
 		// Display the widget
-		echo '<div class="widget-text wp_widget_plugin_box">';
+		echo '<div class="widget-text wp_widget_plugin_box gps_map_widget_class">';
 
 		// Check if title is set
 		if ( $title ) {
@@ -115,16 +117,14 @@ class GPS_MAP_Widget extends WP_Widget {
 }
 
 
-class gps_map_box_class {
+class gps_map_box_class  extends basic_plugin_class {
 
-	const FS_TEXTDOMAIN = 'gpsmapwidget';
-	const FS_PLUGINNAME = 'gps-map-widget';
-	
-	
+	function getPluginBaseName() { return plugin_basename(__FILE__); }
+	function getChildClassName() { return get_class($this); }
+
 	public function __construct() {
-		add_action('init', array($this,'myTextDomain'));
-		add_filter('plugin_row_meta', array($this,'gps_map_widget_PluginLinks'),10,2);
-
+		parent::__construct();
+		
 		add_shortcode( 'EXIF_locationmap', array($this,'custom_EXIF_locationmap' ));
 		add_shortcode( 'EXIF_location', array($this,'custom_EXIF_location' ));
 
@@ -136,7 +136,12 @@ class gps_map_box_class {
 	// map on the attachment edit page
 		add_action( 'admin_menu', array($this,'create_gps_map_box') );
 	}
+	
+	function pluginInfoRight($info) {  }
 
+	const FS_TEXTDOMAIN = 'gpsmapwidget';
+	const FS_PLUGINNAME = 'gps-map-widget';
+	
 	// Add Shortcode
 
 
@@ -282,23 +287,6 @@ class gps_map_box_class {
 		}
 		echo $res;
 	}	
-
-
-	function myTextDomain() {
-		load_plugin_textdomain(
-			self::FS_TEXTDOMAIN,
-			false,
-			dirname(plugin_basename(__FILE__)).'/languages/'
-		);
-	}
-
-	function gps_map_widget_PluginLinks($links, $file) {
-		$base = plugin_basename(__FILE__);
-		if ($file == $base) {
-			$links[] = '<a href="https://wordpress.org/support/view/plugin-reviews/'.self::FS_PLUGINNAME.'#postform">' . __('Please rate me.',self::FS_TEXTDOMAIN) . '</a>';
-		}
-		return $links;
-	}
 
 	function add_header_code () {
 		wp_enqueue_script('GPS_MAP_Widget_js_handler', plugins_url('/js/scripts.js', __FILE__ ), array( 'jquery' ));
