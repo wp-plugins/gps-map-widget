@@ -1,0 +1,89 @@
+.fs_wrap {
+}
+
+.fs_wrap h2 {
+	margin-bottom: 0;
+}
+.fs_wrap .fs_subtitle {
+	margin-bottom: 15px;
+	padding: 3px;	
+}
+
+
+.boxshadow {
+	-moz-box-shadow:2px 2px 5px #999;
+	-webkit-box-shadow:2px 2px 5px #999;
+	box-shadow:2px 2px 5px #999;
+}
+
+.flexbox {
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+
+	display: -moz-box;
+	-moz-box-orient: horizontal;
+
+	display: box;
+	box-orient: horizontal;
+}
+
+.flexchild {
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;	
+}
+
+
+.fs_plugincard {
+	min-height: 102px;
+	border: 1px solid #eee;
+	margin-bottom: 10px;
+	margin-right: 4%;
+	color: #333;
+	background-color: #f0f0f0;
+}
+
+.fs_rightPart,
+.fs_leftPart {
+	background-color: #f9f9f9;
+	margin: 0;
+	padding: 5px;
+	width:10px;
+}
+
+.fs_leftPart  { margin-right: 1px;} 
+.fs_rightPart { margin-left: 1px;}
+
+
+.fs_plugincard h3 {
+	margin: 0;
+	padding: 0;
+}
+
+.fs_plugincard .fs_logo {
+	width: 100px;
+	height: 100px;
+	margin:0;
+	padding:0;
+	float: left;
+	background-color: #eee;
+	margin-right: 10px;
+	border: 1px solid #aaa;
+}
+
+.fs_plugincard .info {
+	padding-top: 5px;
+	height: 55px;
+	margin: 0;
+	overflow: auto;
+}
+.fs_plugincard .bottom {
+	margin: 0;	
+}
+
+.fs_wrap  a {
+	text-decoration: none;
+}
+.fs_wrap a:hover {
+	text-decoration: underline;
+}	
