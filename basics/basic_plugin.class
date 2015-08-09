@@ -1,0 +1,177 @@
+<?php
+/*
+usage:
+
+class <plugin>_class extends basic_plugin_class {
+
+	function getPluginBaseName() { return plugin_basename(__FILE__); }
+	function getChildClassName() { return get_class($this); }
+	function pluginInfo($info) { $this->defaultPluginInfo($info); }   // default, but you can print your own info too. 
+
+	
+	public function __construct() {
+		parent::__construct();
+		
+		// ... plugin stuff ...
+		
+	}
+	
+	function pluginInfo($info) { funsite_
+		$this->defaultPluginInfo($info);  // Show the default description.  Can be replaced with personalized description
+	}  
+
+	const FS_TEXTDOMAIN = 'image-to-postlist'; // textdomain as used by this plugin
+	const FS_PLUGINNAME = 'image-to-postlist'; // Slug on wordpress plugin site
+}
+
+*/
+
+abstract class basic_plugin_class {
+
+// Change this if you want to use this code for your own plugins!
+// The SHARED_GLOBAL is used as key in the $GLOBALS array
+// the SHARED_NAME is used as the name in titles and the like.
+
+	const SHARED_GLOBAL = 'funsite_plugins';  
+	const SHARED_NAME	= 'Funsite plugins';
+
+	// Some basic url's
+
+	const API_URL			= 'http://api.wordpress.org/plugins/info/1.0/';
+	const REVIEW_URL		= 'https://wordpress.org/support/view/plugin-reviews/';
+	const PLUGIN_URL		= 'https://wordpress.org/plugins/';	
+
+// The basics. 
+	
+	private $PLUGIN_URL;
+	private $PLUGIN_PATH;
+	
+    function __construct() { 
+		$usedByClass = $this->getChildClassName();
+		$this->FS_TEXTDOMAIN = $usedByClass::FS_TEXTDOMAIN;
+		$this->FS_PLUGINNAME = $usedByClass::FS_PLUGINNAME;
+
+		$this->PLUGIN_URL = dirname(plugins_url().'/'.$this->getPluginBaseName());
+		$this->PLUGIN_PATH = dirname(WP_PLUGIN_DIR .'/'.$this->getPluginBaseName());
+
+		add_action('init', array($this,'initialize'));
+		add_action('admin_init', array($this,'basic_plugin_headercode'),false,false,true);
+		add_action('admin_menu', array($this,'plugins_menu'));
+		add_filter('plugin_row_meta', array($this,'PluginLinks'),10,2);
+	}
+
+	abstract function getPluginBaseName();		// needed to refer to the child class.
+	abstract function getChildClassName();		// needed to refer to the child class. 
+	abstract function pluginInfoRight($info);
+		
+	function initialize() {
+		$GLOBALS[self::SHARED_GLOBAL][$this->FS_PLUGINNAME]=$this;
+		$pluginRelPath = substr($this->PLUGIN_PATH,strlen(WP_PLUGIN_DIR)+1);
+
+		$ok = load_plugin_textdomain(
+			$this->FS_TEXTDOMAIN,
+			false,
+			$pluginRelPath.'/languages/'
+		);
+		$langFile = $this->PLUGIN_PATH.'/languages/'.$this->FS_TEXTDOMAIN.'-'.get_locale().'.po';
+	}
+
+	function pluginInfo($info) {
+		$logoSrc  = $this->PLUGIN_URL.'/basics/icon-128x128.png';
+		$logoPath = $this->PLUGIN_PATH.'/basics/icon-128x128.png';
+		$aUrl = admin_url();
+		?>
+		<div class="fs_plugincard boxshadow flexbox">
+			
+			<div class="fs_leftPart flexchild">
+				<?php 
+					if (file_exists($logoPath)):
+						?><img src="<?php echo $logoSrc; ?>" class="fs_logo"><?php
+					else:
+						?><div class="fs_logo"></div><?php
+					endif;
+				?>
+				<h3><?php echo $info['wp_plugin_info']['Name'].' '.$info['wp_plugin_info']['Version']?></h3>
+				<p class="info"><?php echo $info['wp_plugin_info']['Description']?></p>
+
+				<p class="bottom">
+					<a href="<?php echo $aUrl;?>plugins.php#<?php echo $this->FS_PLUGINNAME;?>">Entry pluginpage</a>&nbsp;|&nbsp;
+					<a href="<?php echo self::PLUGIN_URL.$this->FS_PLUGINNAME.'/'; ?>">Plugin info</a>&nbsp;|&nbsp;
+					<a href="<?php echo self::REVIEW_URL.$this->FS_PLUGINNAME.'/'; ?>#postform"><?php _e('Please rate me.',$this->FS_TEXTDOMAIN);?></a>&nbsp;|&nbsp;
+				</p>
+			</div>
+			<div class="fs_rightPart flexchild">
+				<?php $this->pluginInfoRight($info); ?>
+			</div>
+		</div>
+	<?php
+	} 
+	
+	
+	function PluginLinks($links, $file) {
+		$base = $this->getPluginBaseName();
+		if ($file == $base) {
+			$links[]='<a href="'.admin_url().'/options-general.php?page='.self::SHARED_GLOBAL.'">'.__('Local plugins info page',$this->FS_TEXTDOMAIN).'</a>';
+		}
+		return $links;
+	}
+	
+	function basic_plugin_headercode () {
+		wp_enqueue_style('basic_plugin_css_handler', plugins_url('/basic_plugin.css',__FILE__ ));
+	}
+	
+	function options_page_exists($slug) {
+		global $submenu;
+		$found=false;
+		foreach($submenu['options-general.php'] as $dum=>$item) {
+			$found=$found | (array_search($slug,$item)!==false);
+			if ($found) { break; } 
+		}
+		return $found;
+	}
+	
+	function getMyPluginInfo($local = true,$api = false) {
+		$info=array('slug' => $this->FS_PLUGINNAME );
+		
+		if ($local):
+			$pluginKey = $this->getPluginBaseName();
+			$info['wp_plugin_info']= get_plugins()[$pluginKey];
+		endif;
+		
+		if ($api):
+			list($pluginSlug,$phpfile) = explode('/',$pluginKey,2);
+			$url = self::API_URL.$pluginSlug.'.php';
+			$info['api_info'] = unserialize(file_get_contents($url));
+		endif;
+		return $info;
+	}
+	
+	function plugins_menu() {
+		if (!$this->options_page_exists(self::SHARED_GLOBAL)) {
+			add_options_page( self::SHARED_NAME, self::SHARED_NAME, 'manage_options', self::SHARED_GLOBAL, array($this,'plugins_page') );
+		}
+	}
+
+	function plugins_page() {
+
+		if ( !current_user_can( 'manage_options' ) )  {
+			wp_die( __( 'You do not have sufficient permissions to access this page.',$this->FS_TEXTDOMAIN) );
+		}
+	
+		echo '<div class="fs_wrap">';
+			// header
+			echo "<h2>" . __( self::SHARED_NAME.' info page', $this->FS_TEXTDOMAIN ) . "</h2>";
+			echo '<div class="fs_subtitle">';
+			echo '<a href="http://www.funsite.eu/">'.__('Goto http://www.funsite.eu/.',$this->FS_TEXTDOMAIN).'</a>&nbsp;|&nbsp;';
+			echo '<a href="mailto:admin@funsite.eu?subject=plugins">admin@funsite.eu</a>';
+			echo '</div>';
+			
+			foreach ($GLOBALS[self::SHARED_GLOBAL] as $tag=>$myself):
+				$info= $myself->getMyPluginInfo(true,false);
+				$myself->pluginInfo($info);
+			endforeach;
+
+		echo '</div>';
+	}
+}
+?>
