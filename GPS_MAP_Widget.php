@@ -1,14 +1,14 @@
 <?php
 /**
  * @package GPS_MAP_Widget
- * @version 1.5
+ * @version 1.6
  */
 /*
 Plugin Name: GPS MAP Widget
 Plugin URI: http://www.funsite.eu/plugins/gps_map_widget/
 Description: Shows a static google map with the GPS location of the featured image.
 Author: Gerhard Hoogterp
-Version: 1.5
+Version: 1.6
 Author URI: http://www.funsite.eu/
 */
 if (!class_exists('basic_plugin_class')) {
@@ -20,7 +20,7 @@ class GPS_MAP_Widget extends WP_Widget {
 	const FS_TEXTDOMAIN = gps_map_box_class::FS_TEXTDOMAIN;
 
 	// constructor
-	function GPS_MAP_Widget() {
+	public function __construct() {
 		parent::WP_Widget(false, 
 					$name = __('GPS MAP Widget', self::FS_TEXTDOMAIN),
 					array('description' => __('Shows a static google map with the GPS location of the featured image',self::FS_TEXTDOMAIN))

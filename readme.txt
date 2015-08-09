@@ -3,8 +3,8 @@ Contributors: jondor
 Donate link: http://www.funsite.eu/downloadable-wallpapers/
 Tags: featured image,gps,google maps,static map,widget
 Requires at least: 3.0.1
-Tested up to: 4.2
-Stable tag: 1.5
+Tested up to: 4.3
+Stable tag: 1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,6 +63,8 @@ slowely working towards this feature.
 2. The widget settings
 
 == Changelog ==
+= 1.6 =
+Fixes for WP4.3
 
 = 1.5 =
 Cleaned up the code and fixed some minor bugs. 
