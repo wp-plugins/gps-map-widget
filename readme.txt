@@ -1,6 +1,6 @@
 === Plugin Name ===
 Contributors: jondor
-Donate link: http://www.funsite.eu/downloadable-wallpapers/
+Donate link: http://plugins.funsite.eu/gps-map-widget/
 Tags: featured image,gps,google maps,static map,widget
 Requires at least: 3.0.1
 Tested up to: 4.3
